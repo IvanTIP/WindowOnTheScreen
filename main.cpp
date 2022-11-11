@@ -1,10 +1,10 @@
 #include <iostream>
 class Window {
 private:
-    int coordX;
-    int coordY;
-    int width;
-    int height;
+    int coordX = 39;
+    int coordY = 24;
+    int width = 10;
+    int height = 10;
 public:
     void setX (int in_x) {
         coordX = in_x;
@@ -43,10 +43,6 @@ public:
             }
         }
         window = new Window;
-        window->setX(39);
-        window->setY(24);
-        window->setWidth(10);
-        window->setHeight(10);
     }
 
     void show () {

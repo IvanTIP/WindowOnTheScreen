@@ -1,48 +1,22 @@
 #include <iostream>
 class Window {
 private:
-    int coordX = 39;
-    int coordY = 24;
-    int width = 10;
-    int height = 10;
+    int coordX;
+    int coordY;
+    int width;
+    int height;
 public:
-    static void move (Window* window) {
-        std::cout << "Enter coordinate X = ";
-        std::cin >> window->coordX;
-        while (window->coordX < 0 || window->coordX > 79) {
-            std::cout << "Wrong coordinate! Try again" << std::endl;
-            std::cout << "Enter coordinate X = ";
-            std::cin >> window->coordX;
-        }
-        std::cout << "Enter coordinate Y = ";
-        std::cin >> window->coordY;
-        while (window->coordY < 0 || window->coordY > 49) {
-            std::cout << "Wrong coordinate! Try again" << std::endl;
-            std::cout << "Enter coordinate Y = ";
-            std::cin >> window->coordY;
-        }
-        std::cout << "New coordinates of window:" << std::endl;
-        std::cout << "X = " << window->coordX << std::endl;
-        std::cout << "Y = " << window->coordY << std::endl;
+    void setX (int in_x) {
+        coordX = in_x;
     }
-    static void resize (Window* window) {
-        std::cout << "Enter new size of width of window: ";
-        std::cin >> window->width;
-        while (window->width < 0 || window->width >79) {
-            std::cout << "Input error! Try again" << std::endl;
-            std::cout << "Enter new size of width of window: ";
-            std::cin >> window->width;
-        }
-        std::cout << "Enter new size of height of window: ";
-        std::cin >> window->height;
-        while (window->height < 0 || window->height > 49) {
-            std::cout << "Input error! Try again" << std::endl;
-            std::cout << "Enter new size of height of window: ";
-            std::cin >> window->height;
-        }
-        std::cout << "New window sizes:" << std::endl;
-        std::cout << "Width: " << window->width << std::endl;
-        std::cout << "Height: " << window->height << std::endl;
+    void setY (int in_y) {
+        coordY = in_y;
+    }
+    void setWidth (int in_width) {
+        width = in_width;
+    }
+    void setHeight (int in_height) {
+        height = in_height;
     }
     int getX () {
         return coordX;
@@ -58,17 +32,24 @@ public:
     }
 };
 class Monitor {
-  private:
+private:
+    Window *window;
     char monitorField[80][50];
-  public:
-    static void fieldInit (Monitor* monitor) {
+public:
+    Monitor () {
         for (int i = 0;i < 50;i++) {
             for (int j = 0;j < 80;j++) {
-                monitor->monitorField[j][i] = '0';
+                monitorField[j][i] = '0';
             }
         }
+        window = new Window;
+        window->setX(39);
+        window->setY(24);
+        window->setWidth(10);
+        window->setHeight(10);
     }
-    static void show (Monitor* monitor, class Window* window) {
+
+    void show () {
         int X = window->getX();
         int Y = window->getY();
         int width = window->getWidth();
@@ -80,37 +61,90 @@ class Monitor {
                         std::cout << '1';
                         j++;
                     }
+                    j--;
                 } else if (j == X && i > Y && i <= Y + height) {
                     for (int k = 0;k < width && j < 80;k++) {
                         std::cout << '1';
                         j++;
                     }
+                    j--;
                 } else {
-                    std::cout << monitor->monitorField[j][i];
+                    std::cout << monitorField[j][i];
                 }
             }
             std::cout << std::endl;
         }
     }
-    friend class Window;
+
+    void move () {
+        int x, y;
+        std::cout << "Enter coordinate X = ";
+        std::cin >> x;
+        while (x < 0 || x > 79) {
+            std::cout << "Wrong coordinate! Try again" << std::endl;
+            std::cout << "Enter coordinate X = ";
+            std::cin >> x;
+        }
+        window->setX(x);
+
+        std::cout << "Enter coordinate Y = ";
+        std::cin >> y;
+        while (y < 0 || y > 49) {
+            std::cout << "Wrong coordinate! Try again" << std::endl;
+            std::cout << "Enter coordinate Y = ";
+            std::cin >> y;
+        }
+        window->setY(y);
+
+        std::cout << "New coordinates of window:" << std::endl;
+        std::cout << "X = " << window->getX() << std::endl;
+        std::cout << "Y = " << window->getY() << std::endl;
+    }
+
+    void resize () {
+        int width, height;
+        std::cout << "Enter new size of width of window: ";
+        std::cin >> width;
+        while (width < 0 || width >79) {
+            std::cout << "Input error! Try again" << std::endl;
+            std::cout << "Enter new size of width of window: ";
+            std::cin >> width;
+        }
+        window->setWidth(width);
+
+        std::cout << "Enter new size of height of window: ";
+        std::cin >> height;
+        while (height < 0 || height > 49) {
+            std::cout << "Input error! Try again" << std::endl;
+            std::cout << "Enter new size of height of window: ";
+            std::cin >> height;
+        }
+        window->setHeight(height);
+
+        std::cout << "New window sizes:" << std::endl;
+        std::cout << "Width: " << window->getWidth() << std::endl;
+        std::cout << "Height: " << window->getHeight() << std::endl;
+    }
+
+    void clearWindow () {
+        delete window;
+    }
 };
 
 int main() {
     Monitor* monitor = new Monitor;
-    Window* window = new Window;
     while (true) {
         std::string command;
         std::cout << "Enter the command: ";
         std::cin >> command;
         if (command == "move") {
-            Window::move(window);
+            monitor->move();
         } else if (command == "resize") {
-            Window::resize(window);
+            monitor->resize();
         } else if (command == "display") {
-            Monitor::fieldInit(monitor);
-            Monitor::show(monitor, window);
+            monitor->show();
         } else if (command == "close") {
-            delete window;
+            monitor->clearWindow();
             delete monitor;
             return 0;
         }
